@@ -22,8 +22,10 @@ class DriveSquare():
         self.targ_heading = 0.0
         self.vel = 0.2
         self.ang_vel = 0.2
-        self.line_active = False
-        self.corner_active = False
+        self.pos_reached = False
+        self.angle_reached = False
+
+        self.state = self.draw_line
 
     def odom_callback(self, msg):
         pos = msg.pose.pose.position
@@ -34,19 +36,9 @@ class DriveSquare():
         self.x = pos.x
         self.y = pos.y
 
-    def line(self):
-        if not self.line_active:
-            curr_x = self.x
-            curr_y = self.y
-            self.calc_target_position(curr_x, curr_y)
-            self.pub.publish(Twist(linear=Vector3(x=self.vel, y=0)))
-            self.line_active = True
-        if self.line_active:
-            if self.x >= self.targ_x:
-                self.pub.publish(Twist(linear=Vector3(x=0, y=0)))
-                self.line_active = False
-
-    def calc_target_position(self, curr_x, curr_y):
+    def calc_target_position(self):
+        curr_x = self.x
+        curr_y = self.y
         if 0 < self.heading <= .5 * math.pi:
             self.targ_x = math.cos(self.heading) + curr_x
             self.targ_y = math.sin(self.heading) + curr_y
@@ -60,37 +52,61 @@ class DriveSquare():
             self.targ_x = -1*math.cos(self.heading) + curr_x
             self.targ_y = -1*math.sin(self.heading) + curr_y
 
+    def calc_new_heading(self):
+        curr_heading = self.heading
+        temp_heading = curr_heading + .5*math.pi
+        if temp_heading > math.pi:
+            remainder = temp_heading % math.pi
+            self.targ_heading = -1*math.pi + remainder
+        else:
+            self.targ_heading = temp_heading
 
-    def corner(self):
-        if not self.corner_active:
-            curr_heading = self.heading
-            temp_heading = curr_heading + .5*math.pi
-            if temp_heading > math.pi:
-                remainder = temp_heading % math.pi
-                self.targ_heading = -1*math.pi + remainder
-            else:
-                self.targ_heading = temp_heading
-            self.pub.publish(Twist(angular=Vector3(z=self.ang_vel)))
-            self.corner_active = True
-        if self.corner_active:
-            if self.heading >= self.targ_heading:
+    def monitor_heading(self):
+        if self.heading >= self.targ_heading:
                 self.pub.publish(Twist(angular=Vector3(z=0)))
-                self.corner_active = False
+                self.angle_reached = True
+
+    def monitor_pos(self):
+        if self.x >= self.targ_x:
+                self.pub.publish(Twist(linear=Vector3(x=0, y=0)))
+                self.pos_reached = True
+
+    def draw_line(self):
+            r = rospy.Rate(10)
+            self.calc_target_position()
+
+            self.pub.publish(Twist(linear=Vector3(x=self.vel, y=0), angular=Vector3(z=0)))
+
+            while not rospy.is_shutdown():
+                self.monitor_pos()
+                print("X pos: " + str(self.x))
+                if self.pos_reached:
+                    print("Woop di doooo")
+                    self.pos_reached = False
+                    return self.turn_corner
+                r.sleep()
+
+    def turn_corner(self):
+        r = rospy.Rate(10)
+        self.calc_new_heading()
+
+        self.pub.publish(Twist(angular=Vector3(z=self.ang_vel)))
+
+        while not rospy.is_shutdown():
+            self.monitor_heading()
+            if self.angle_reached:
+                self.angle_reached = False
+                return self.draw_line
+            r.sleep()
 
 
     def run(self):
+        rospy.sleep(1)
         while not rospy.is_shutdown():
-            time.sleep(2)
-            print("----------")
-            print("x_pos:" + str(self.x) + " x_targ:" + str(self.targ_x))
-            print("neato_ang:" + str(self.heading) + " ang_targ:" + str(self.targ_x))
-            if not self.corner_active:
-                self.line()
-            if not self.line_active:
-                self.corner()
+            print("Pos flag: " + str(self.pos_reached))
+            self.state = self.state()
+            print(self.state) #HELP doesn't print here
 
 if __name__ == '__main__':
     ds = DriveSquare()
     ds.run()
-
-    # TODO WE MIGHT BE USING ODOM DATA INCORRECTLY (probably should be in world coord not neato)

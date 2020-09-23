@@ -14,7 +14,11 @@ class Teleop():
         self.def_lin_vel = 0.1
         self.ang_vel = 8
         rospy.init_node('teleop')
+        rospy.Subscriber('/odom', Odometry, self.odom_callback)
+
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+
+        self.pos = msg.pose.pose.position
 
     def getKey(self):
         settings = termios.tcgetattr(sys.stdin)
@@ -51,6 +55,7 @@ class Teleop():
             self.getKey()
             self.setMotion()
             print(self.curr_key)
+            print("pos: (" + str(self.pos.x) + "," + str(self.pos.y))
             rospy.Rate(10).sleep()
             
     
