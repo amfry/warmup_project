@@ -6,6 +6,8 @@ import sys
 import termios
 import rospy
 from geometry_msgs.msg import Vector3, Twist
+from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion
 
 class Teleop():
     def __init__(self):
@@ -17,11 +19,24 @@ class Teleop():
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
 
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        self.x = None
+        self.y = None
 
-        self.pos = msg.pose.pose.position
+        #self.pos = msg.pose.pose.position
+
+    def odom_callback(self, msg):
+        pos = msg.pose.pose.position
+        orient = msg.pose.pose.orientation
+        orientation_tuple = (orient.x, orient.y, orient.z, orient.w)
+        angles = euler_from_quaternion(orientation_tuple)
+        self.heading = angles[2]
+        self.x = pos.x
+        self.y = pos.y
+        print("curr_pos: " + str(round(self.x,2)) + "," + str(round(self.y,2)) + "\n")
+        print()
 
     def getKey(self):
-        settings = termios.tcgetattr(sys.stdin)
+        settings = termios.tcgetattr(sys.stdin
         tty.setraw(sys.stdin.fileno())
         select.select([sys.stdin], [], [], 0)
         key = sys.stdin.read(1)
@@ -55,7 +70,7 @@ class Teleop():
             self.getKey()
             self.setMotion()
             print(self.curr_key)
-            print("pos: (" + str(self.pos.x) + "," + str(self.pos.y))
+            #print("pos: (" + str(self.pos.x) + "," + str(self.pos.y))
             rospy.Rate(10).sleep()
             
     
