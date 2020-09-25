@@ -62,15 +62,37 @@ class DriveSquare():
             self.targ_heading = temp_heading
 
     def monitor_heading(self):
-        if self.heading >= self.targ_heading:
+        print("------Corner----------")
+        head_comp = self.heading >= self.targ_heading
+        print(head_comp)
+        if head_comp:
             self.angle_reached = True
             print("NUT NUT NUT HEADINGGGG")
+            print(self.angle_reached)
             self.pub.publish(Twist(angular=Vector3(z=0)))
 
+    # def monitor_pos(self):
+    #     print("heck ya")
+    #     if round(self.x,1) >= round(self.targ_x,1) and round(self.y,1) >= round(self.targ_y,1):
+    #             self.pub.publish(Twist(linear=Vector3(x=0, y=0)))
+    #             self.pos_reached = True
+
     def monitor_pos(self):
-        if self.x >= self.targ_x and round(self.y,2) >= round(self.targ_y,2):
-                self.pub.publish(Twist(linear=Vector3(x=0, y=0)))
-                self.pos_reached = True
+        if (abs(self.y) < 0.5):
+            y_comp = math.isclose(abs(self.y), abs(self.targ_y), abs_tol=.2)
+        else:
+            y_comp = math.isclose(self.y, self.targ_y, rel_tol=.2)
+        if (abs(self.x) < 0.5):
+            x_comp = math.isclose(abs(self.x), abs(self.targ_x), abs_tol=.2)
+        else:
+            x_comp = math.isclose(self.x, self.targ_x, rel_tol=.2)
+
+        print("------Line----------")
+        print(x_comp, y_comp)
+
+        if x_comp and y_comp:
+            self.pub.publish(Twist(linear=Vector3(x=0, y=0)))
+            self.pos_reached = True
 
     def draw_line(self):
             r = rospy.Rate(10)
@@ -80,18 +102,19 @@ class DriveSquare():
 
             while not rospy.is_shutdown():
                 self.monitor_pos()
+                print("------------------")
                 print("X pos: " + str(self.x))
                 print("Y pos: " + str(self.y))
                 print("X target: " + str(self.targ_x))
                 print("Y target: " + str(self.targ_y))
-                print("Pos Reached: " + str(self.pos_reached))
-                print("")
-                print("")
-                print("Heading: " + str(self.heading))
-                print("Targ heading: " + str(self.y))
-                print("Angle Reached: " + str(self.angle_reached))
-                print("")
-                print("")
+                # print("Pos Reached: " + str(self.pos_reached))
+                # print("")
+                # print("")
+                # print("Heading: " + str(self.heading))
+                # print("Targ heading: " + str(self.y))
+                # print("Angle Reached: " + str(self.angle_reached))
+                # print("")
+                # print("")
                 time.sleep(1)
                 if self.pos_reached:
                     print("Woop di doooo")
@@ -107,9 +130,9 @@ class DriveSquare():
 
         while not rospy.is_shutdown():
             self.monitor_heading()
-
             if self.angle_reached:
                 self.angle_reached = False
+                print("hello")
                 return self.draw_line
             r.sleep()
 
