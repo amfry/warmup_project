@@ -14,7 +14,7 @@ class Teleop():
         self.curr_key = None
         self.lin_vel = 0.2
         self.def_lin_vel = 0.1
-        self.ang_vel = 8
+        self.ang_vel = 3
         rospy.init_node('teleop')
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
 
@@ -32,11 +32,11 @@ class Teleop():
         self.heading = angles[2]
         self.x = pos.x
         self.y = pos.y
-        print("curr_pos: " + str(round(self.x,2)) + "," + str(round(self.y,2)) + "\n")
+        print("curr_pos: " + str(round(self.x,2)) + "," + str(round(self.y,2)) + "\r")
         print()
 
     def getKey(self):
-        settings = termios.tcgetattr(sys.stdin
+        settings = termios.tcgetattr(sys.stdin)
         tty.setraw(sys.stdin.fileno())
         select.select([sys.stdin], [], [], 0)
         key = sys.stdin.read(1)

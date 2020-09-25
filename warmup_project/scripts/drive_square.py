@@ -63,11 +63,12 @@ class DriveSquare():
 
     def monitor_heading(self):
         if self.heading >= self.targ_heading:
-                self.pub.publish(Twist(angular=Vector3(z=0)))
-                self.angle_reached = True
+            self.angle_reached = True
+            print("NUT NUT NUT HEADINGGGG")
+            self.pub.publish(Twist(angular=Vector3(z=0)))
 
     def monitor_pos(self):
-        if self.x >= self.targ_x:
+        if self.x >= self.targ_x and round(self.y,2) >= round(self.targ_y,2):
                 self.pub.publish(Twist(linear=Vector3(x=0, y=0)))
                 self.pos_reached = True
 
@@ -80,6 +81,18 @@ class DriveSquare():
             while not rospy.is_shutdown():
                 self.monitor_pos()
                 print("X pos: " + str(self.x))
+                print("Y pos: " + str(self.y))
+                print("X target: " + str(self.targ_x))
+                print("Y target: " + str(self.targ_y))
+                print("Pos Reached: " + str(self.pos_reached))
+                print("")
+                print("")
+                print("Heading: " + str(self.heading))
+                print("Targ heading: " + str(self.y))
+                print("Angle Reached: " + str(self.angle_reached))
+                print("")
+                print("")
+                time.sleep(1)
                 if self.pos_reached:
                     print("Woop di doooo")
                     self.pos_reached = False
@@ -94,6 +107,7 @@ class DriveSquare():
 
         while not rospy.is_shutdown():
             self.monitor_heading()
+
             if self.angle_reached:
                 self.angle_reached = False
                 return self.draw_line
@@ -104,6 +118,11 @@ class DriveSquare():
         rospy.sleep(1)
         while not rospy.is_shutdown():
             print("Pos flag: " + str(self.pos_reached))
+
+            # print("Heading: " + str(self.heading))
+            # print("Targ heading: " + str(self.y))
+            # print("Angle Reached: " + str(self.angle_reached))
+
             self.state = self.state()
             print(self.state) #HELP doesn't print here
 
