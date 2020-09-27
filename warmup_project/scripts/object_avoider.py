@@ -15,19 +15,24 @@ class ObjectAvoider():
         rospy.init_node('object_avoider')
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         rospy.Subscriber('/scan', LaserScan, self.process_scan)
-        self.ang_vel = 0.55
+        self.ang_vel = 0.3
         self.lin_vel = 0.2
         self.path_clear = None
 
     def process_scan(self, msg):
         self.lidar_scan = msg.ranges[0:20] + msg.ranges[340:360]
         print("Any: " + str(any(np.isinf(self.lidar_scan))))
-        if any(np.logical_not(np.isinf(self.lidar_scan))) == True:
-            self.path_clear = False
+        for i in self.lidar_scan:
+            if i < 1:
+                self.path_clear = False
+                break
+            else:
+                self.path_clear = True
+        propose_vel = min(self.lidar_scan) * 0.08
+        if propose_vel * 0.08 > 1:
+            self.lin_vel = .5
         else:
-            self.path_clear = True
-
-        self.lin_vel = min(self.lidar_scan) * 0.08
+            self.lin_vel = propose_vel
         print("Lin vel: " + str(self.lin_vel))
         print("Clear? " + str(self.path_clear))
         print(self.lidar_scan)
