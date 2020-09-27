@@ -18,12 +18,12 @@ class PersonFollower():
         self.neato_state = None
         self.theta = None
         self.ang_vel = 0.2
+        self.following_distance = 1
         self.linear_vel = .15
         self.lidar_range_index = []
         self.lidar_range_values = []
         self.lidar_scan = []
-        self.targ_heading = None
-        self.turn = True
+        self.targ_heading = 0
 
     def process_scan(self, msg):
         self.lidar_scan = msg.ranges
@@ -37,23 +37,28 @@ class PersonFollower():
         self.targ_heading = self.lidar_range_index[list_index]
         print(self.targ_heading)
 
-    def controller(self):
-        ang_vel = 0.004 * self.targ_heading
+    def angular_controller(self):
+        ang_vel = 0.008 * self.targ_heading
         self.pub.publish(Twist(angular=Vector3(z=ang_vel)))
+    
+    def linear_controller(self):
+        lin_vel = 0.2 * self.lidar_scan[0]
+        self.pub.publish(Twist(linear=Vector3(x=lin_vel)))
+
+    def distance_follow(self):
+        print("distance: " + str(self.lidar_scan[0]))
+        if self.lidar_scan[0] > self.following_distance:
+            self.linear_controller()
+            
+        else:
+            self.pub.publish(Twist(linear=Vector3(x=0)))
 
     def pursue_person(self):
-        if self.turn == True:
-            self.controller()
-        if 355 < self.targ_heading < 5:
+        if 3 < self.targ_heading < 357:
+            self.angular_controller()
+        else:
             self.pub.publish(Twist(angular=Vector3(z=0)))
-            self.turn = False
-
-
-
-
-    # def calc_center_mass(self):
-    #     self.heading = len(self.lidar_range) / 2
-    #     print("Heading: " + str(self.heading))
+            self.distance_follow()
 
     def run(self):
         r = rospy.Rate(10)
