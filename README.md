@@ -2,6 +2,18 @@
 ### Abby Fry and Vienna Scheyer
 
 ## Robot Telop
+For our teleop, we went with a pretty straight forward implementation using keyboard input. The key mapping is as follows:
+
+W = forward
+S = backward
+A = rotate left
+D = rotate right
+M = speed up
+N = slow down (stops slowing down at 0 m/s)
+P = stop
+
+
+
 ## Driving in a Square
 ## Wall Following
 ## Person Following
@@ -14,4 +26,4 @@ Each behavior implemented is it's own class.  Each class has a run method that i
 ### Key takeways
 * Incremental development:
 * Drawing as a planning tool:
-* Realistic goals: When starting to project we had hopes of not doing the simplest implpmentation of every challenge.  However, we are both new to ROS and found the learning curve at the beginning quite steep. This led to us spending a lot of time on some of the early challenges with limited successs and then ended up still needing to pivot to simpler implemntations.  It probably would have been better for us to do the simple strategy first and then go back and try more the more difficult strategies if there was still time left.
+* Realistic goals: When starting to project we had hopes of not doing the simplest implpmentation of every challenge.  However, we are both new to ROS and found the learning curve at the beginning quite steep. This led to us spending a lot of time on some of the early challenges with limited successs and then ended up still needing to pivot to simpler implementations.  It probably would have been better for us to do the simple strategy first and then go back and try more the more difficult strategies if there was still time left.
