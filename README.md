@@ -24,11 +24,11 @@ In the wall following behavior, the neato aims to position itself parallel to th
  
 ![Wall States](images/wall_follow_states.jpg)
 
-If the neato is already parallel to the wall, it simply moves forward. Otherwise, the neato acts according to one of the other cases. The following diagram shows the geometry for each case and the corresponding calculations:
+If the neato is already parallel to the wall, it simply moves forward. Otherwise, the neato acts according to one of the other cases. The following diagram shows the geometry for each case and the corresponding calculations in degrees:
 
+![](images/neato_wall_follower_diagram.png)
 
-
-Here's an example of the wall follower:
+Here's an example of the wall follower in the neato simulator:
 
 ![Wall Following](gifs/wall_follow_2.gif)
 
