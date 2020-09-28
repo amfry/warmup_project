@@ -10,7 +10,11 @@ For our teleop, we went with a pretty straight forward implementation using keyb
 ## Wall Following
 ![Wall States](https://github.com/amfry/warmup_project/blob/master/images/wall_follow_states.jpg)
 ## Person Following
+![follow](https://github.com/amfry/warmup_project/blob/master/images/follow.jpeg)
 ## Object Avoidance
+case 1: neato can't go
+case 2 and 3: neato can go
+neato operates by turning and driving til a case 2 or 3 can be achieved
 ![avoid](https://github.com/amfry/warmup_project/blob/master/images/avoidance.jpeg)
 ## FS Control
 ![Finite State Machine](https://github.com/amfry/warmup_project/blob/master/images/CompRobo_FSM.jpeg)
