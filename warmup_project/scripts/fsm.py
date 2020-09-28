@@ -34,11 +34,13 @@ class FiniteState():
                 self.lidar_range_values.append(self.lidar_scan[i])
                 self.lidar_range_index.append(i)
         if len(self.lidar_range_index) == 0:
-            self.angular_controller()
+            # self.angular_controller()
+            self.person_present = False
         else:
             list_index = np.argmin(self.lidar_range_values)
             self.targ_heading = self.lidar_range_index[list_index]
-        self.check_person()
+            self.person_present = True
+        # self.check_person()
         #print("person? " + str(self.person_present))
         #print(self.targ_heading)
 
@@ -60,7 +62,7 @@ class FiniteState():
             self.distance_follow()
     
     def angular_controller(self):
-        ang_vel = 0.03 * self.targ_heading
+        ang_vel = 0.015 * self.targ_heading
         self.pub.publish(Twist(angular=Vector3(z=ang_vel)))
 
     def linear_controller(self):
@@ -94,7 +96,7 @@ class FiniteState():
         while not rospy.is_shutdown():
             if self.person_present:
                 pass
-                #self.move_to_person()
+                self.move_to_person()
             if not self.person_present:
                 print("====== DRIVING SQUAREEEEEEEEEE ========")
                 self.drive_square()
