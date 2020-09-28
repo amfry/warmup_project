@@ -8,7 +8,9 @@ We opted for the robot to continue moving in the direction of the most recent ke
 
 ## Driving in a Square
 The robot moves in an approximately 1 by 1 meter square path by first driving in a straight line at a specified speed for set time and then turning counter clockwise for a set time at a set speed. The diagram shows the timing increments the neato used to turn and drive forward while completing a square.
+
 ![Square](https://github.com/amfry/warmup_project/blob/master/images/Square.jpeg)
+
 Using the time implementation, we had to tune the speed/time paramters of our square. Despite this additional tuning step, the time implementation was overall a quick process and it allowed us to focused more on other challenges.
 
 We originally attemped to implement an odometery version of driving in a square but we where having challenges turning the neato to a precise location.  We pivoted to the time implementation for the sake of moving on. After gaining experience from the other challenges, we see that perhaps a proportional controller could have helped our odometery implementation be more successful.
@@ -18,26 +20,50 @@ This gif shows the neato driving in a square:
 ![](gifs/drive_square.gif)
 
 ## Wall Following
-In the wall following behavior, the neato aims to position itself parallel to the wall. Using lidar sensors at 
+In the wall following behavior, the neato aims to position itself parallel to the wall. Using lidar sensors at +/- 45 degrees from the right or left side the neato (depending on which side it detects an object), we set the neato to rotate until the two lidar sensors are equidistant from the wall. The neato might either be parallel to the wall already, or it might be rotated towards or away from the wall. The following image shows these distinct cases:
  
-![Wall States](https://github.com/amfry/warmup_project/blob/master/images/wall_follow_states.jpg)
+![Wall States](images/wall_follow_states.jpg)
+
+If the neato is already parallel to the wall, it simply moves forward. Otherwise, the neato acts according to one of the other cases. The following diagram shows the geometry for each case and the corresponding calculations:
+
+
+
+Here's an example of the wall follower:
+
+![Wall Following](gifs/wall_follow_2.gif)
+
 ## Person Following
 In person following, the neato pursues a "person" by following at a specified distance of 1 meter.  To do this, our neato begins by performing a 360 lidar scan to check for a person. If all lidar values are infinity that means no person is present, but if any lidar values are non-infinite we add those values to a lidar_range_list. We use the minimum value in the lidar_range_list to determine the desired heading because theoretically the center of a round object will be the closest point. If this desired heading is within +/- 3 degrees of the neato's current heading, the neato drives forward until it is within range of the person. Otherwise, the neato rotates until it is facing the person. For the rotation we use proportional control so that the neato comes to a smooth stop at the desired heading. The following diagram shows the neato registering the presence of a person, turning towards the person, and then moving towards the person.
+
 ![follow](https://github.com/amfry/warmup_project/blob/master/images/follow.jpeg)
+
 We discovered a fundamental flaw in our algorithm the first time we tested it without a person in the neato's lidar range. This resulted in some alarming neato motion because the neato was trying to use proportional control on an infinite distance. Once we added a clause to handle the case where all lidar readings are infinite, the person following algorithm worked quite reliably.
+
 ## Object Avoidance
 In object avoidance, the neato only proceeds forward is there is no object within 1 meter in it's lidar scan from +/- 20° from 0°.  In situations where an object violates those conditions, the neato turns until there is no object within 1 meter.  Otherwise, the neato drives forward.  In the diagram below, the neato would drive forward in case 2 and 3.  For case 1, the neato would turn until the conditions needed to drive forward are met.
 ![avoid](https://github.com/amfry/warmup_project/blob/master/images/avoidance.jpeg)
 In implementing object avoidance, we originally wanted the neato to drive forward only if it saw no object at from +/- 20° from 0°.  However, that meant the neato was unable to navigate situations where there was more than 1 obstacle.  This led us to make it so the neato was avoiding objects only within a meter of it so the robot could navigate more complex situations.  We also had to adjust the tolerance around 0° so that neato was able to identify a path forward that was wide enough for it but that the path requirements weren't so large that the neato could only navigate very simple obstacles.
 ## Finite State Control
 For finite state control, we chose to use a flag to denote whether or not a person is present. The run function checks this flag and sets the state accordingly. The following diagram shows the states and transitions of the FSM.
+
 ![Finite State Machine](https://github.com/amfry/warmup_project/blob/master/images/CompRobo_FSM.jpeg)
+
 In our debugging process, we sometimes had a hard time narrowing down the issue since it was hard to tell which state was active and which parts worked. We found it to be very effective to disable one state at a time to identify bugs and work our way up to the functional FSM.
+
+Here's the FSM in action:
+
+![](gifs/fsm.gif)
+
 ## Overal Project
 
 ### Code Structure
 Each behavior implemented is it's own class.  Each class has a run method that is called in the main function. The run method calls various helper function, such as monitoring if the desired position of the robot has been achieved.  In each class we also defined many attributes in the init method, some of which were updated to new values while the program was running.
-### Challenges/Areas for Improvment
+
+### Challenges/Areas for Improvement
+Many of our challenges in this project were related to our limited experience with ROS.  When there was a problem, it was often hard to determine if it was our misunderstanding of certain ROS commands or an algorithm error.  Another challenge we experienced was being to ambitious in trying to implement some of the going further sections before getting a basic implementation working.  This caused us to invest a lot of time in certain sections, like driving in a square, without actually completing that part of the project.  Going forward, we want to get an MVP working before trying to do any of the challenges, even if they seem within our capability.
+
+Given more time, we would go back and try the odometry implementation of driving in a square. We learned a lot doing the later challenges and we think that going back and rethinking through the problem would make it possible for us to implement with odometry.  We also would increase the readability and documentation in our code so that is could be a more helpful example as we move forward in the class.  If we were to rework some of our challenges, we would focus on improving wall following and obstacle avoidance as our current implementations are not particularly robust.
+
 ### Key takeways
 * Incremental development:
 We made the mistake on the first few challenges of immediately jumping into writing code and this strategy stopped working once the problems got harder.  By discussing an outline for the code we were able to implement later challenges quickly and have a common understanding of our strategy.
