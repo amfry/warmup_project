@@ -3,16 +3,7 @@
 
 ## Robot Telop
 For our teleop, we went with a pretty straight forward implementation using keyboard input. The key mapping is as follows:
-
-W = forward
-S = backward
-A = rotate left
-D = rotate right
-M = speed up
-N = slow down (stops slowing down at 0 m/s)
-P = stop
-
-
+![teleop](https://github.com/amfry/warmup_project/blob/master/images/teleop.jpeg)
 
 ## Driving in a Square
 ![Square](https://github.com/amfry/warmup_project/blob/master/images/Square.jpeg)
