@@ -16,6 +16,7 @@ We originally attemped to implement an odometery version of driving in a square 
  
 ![Wall States](https://github.com/amfry/warmup_project/blob/master/images/wall_follow_states.jpg)
 ## Person Following
+In person following, the neato pursues a "person," following a specified distance of 1 meter.  To do this, our neato moves through 3 stages.  In stage 1, the neato completes a 360 lidar 
 ![follow](https://github.com/amfry/warmup_project/blob/master/images/follow.jpeg)
 ## Object Avoidance
 case 1: neato can't go
