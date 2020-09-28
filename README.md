@@ -13,6 +13,10 @@ Using the time implementation, we had to tune the speed/time paramters of our sq
 
 We originally attemped to implement an odometery version of driving in a square but we where having challenges turning the neato to a precise location.  We pivoted to the time implementation for the sake of moving on. After gaining experience from the other challenges, we see that perhaps a proportional controller could have helped our odometery implementation be more successful.
 
+This gif shows the neato driving in a square:
+
+![](gifs/drive_square.gif)
+
 ## Wall Following
 In the wall following behavior, the neato aims to position itself parallel to the wall. Using lidar sensors at 
  
@@ -22,10 +26,9 @@ In person following, the neato pursues a "person" by following at a specified di
 ![follow](https://github.com/amfry/warmup_project/blob/master/images/follow.jpeg)
 We discovered a fundamental flaw in our algorithm the first time we tested it without a person in the neato's lidar range. This resulted in some alarming neato motion because the neato was trying to use proportional control on an infinite distance. Once we added a clause to handle the case where all lidar readings are infinite, the person following algorithm worked quite reliably.
 ## Object Avoidance
-case 1: neato can't go
-case 2 and 3: neato can go
-neato operates by turning and driving til a case 2 or 3 can be achieved
+In object avoidance, the neato only proceeds forward is there is no object within 1 meter in it's lidar scan from +/- 20° from 0°.  In situations where an object violates those conditions, the neato turns until there is no object within 1 meter.  Otherwise, the neato drives forward.  In the diagram below, the neato would drive forward in case 2 and 3.  For case 1, the neato would turn until the conditions needed to drive forward are met.
 ![avoid](https://github.com/amfry/warmup_project/blob/master/images/avoidance.jpeg)
+In implementing object avoidance, we originally wanted the neato to drive forward only if it saw no object at from +/- 20° from 0°.  However, that meant the neato was unable to navigate situations where there was more than 1 obstacle.  This led us to make it so the neato was avoiding objects only within a meter of it so the robot could navigate more complex situations.  We also had to adjust the tolerance around 0° so that neato was able to identify a path forward that was wide enough for it but that the path requirements weren't so large that the neato could only navigate very simple obstacles.
 ## Finite State Control
 For finite state control, we chose to use a flag to denote whether or not a person is present. The run function checks this flag and sets the state accordingly. The following diagram shows the states and transitions of the FSM.
 ![Finite State Machine](https://github.com/amfry/warmup_project/blob/master/images/CompRobo_FSM.jpeg)
