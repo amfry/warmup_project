@@ -22,7 +22,7 @@ class FiniteState():
         self.lidar_scan = None
         self.ang_vel = .55
         self.line_vel = .2
-        self.state = self.drive_square()
+        self.state = "square" # states are "square" and "person"
         self.following_distance = 1
 
     def process_scan(self, msg):
@@ -48,55 +48,49 @@ class FiniteState():
     def drive_square(self):
         time.sleep(1)
         r = rospy.Rate(10)
-        while not self.person_present:
-            self.pub.publish(Twist(linear=Vector3(x=0, y=0), angular=Vector3(z=0)))
-            self.pub.publish(Twist(linear=Vector3(x=self.line_vel, y=0)))
-            time.sleep(5)
-            self.pub.publish(Twist(linear=Vector3(x=0, y=0), angular=Vector3(z=self.ang_vel)))
-            time.sleep(3)
-            self.pub.publish(Twist(angular=Vector3(z=0)))
-        while not rospy.is_shutdown():
-            if self.person_present:
-                self.pub.publish(Twist(linear=Vector3(x=0, y=0), angular=Vector3(z=0)))
-                return self.follow_person
-            r.sleep()
+        self.pub.publish(Twist(linear=Vector3(x=0, y=0), angular=Vector3(z=0)))
+        self.pub.publish(Twist(linear=Vector3(x=self.line_vel, y=0)))
+        time.sleep(5)
+        self.pub.publish(Twist(linear=Vector3(x=0, y=0), angular=Vector3(z=self.ang_vel)))
+        time.sleep(3)
+        self.pub.publish(Twist(angular=Vector3(z=0)))
 
     def follow_person(self):
         r = rospy.Rate(10)
-        #self.move_to_person()
-        while not rospy.is_shutdown():
-            print("step")
-            if not self.person_present:
-                return self.drive_square
-            r.sleep
+        self.move_to_person()
+        print("HI PERSON")
+        self.pub.publish(Twist(linear=Vector3(x=0, y=0), angular=Vector3(z=0)))
 
-    # def move_to_person(self):
-    #     if 3 < self.targ_heading < 357:
-    #         self.angular_controller()
-    #     else:
-    #         self.pub.publish(Twist(angular=Vector3(z=0)))
-    #         self.distance_follow()
-    #
-    # def angular_controller(self):
-    #     ang_vel = 0.008 * self.targ_heading
-    #     self.pub.publish(Twist(angular=Vector3(z=ang_vel)))
-    #
-    # def linear_controller(self):
-    #     lin_vel = 0.2 * self.lidar_scan[0]
-    #     self.pub.publish(Twist(linear=Vector3(x=lin_vel)))
-    #
-    # def distance_follow(self):
-    #     print("distance: " + str(self.lidar_scan[0]))
-    #     if self.lidar_scan[0] > self.following_distance:
-    #         self.linear_controller()
-    #     else:
-    #         self.pub.publish(Twist(linear=Vector3(x=0)))
+    def move_to_person(self):
+        if 3 < self.targ_heading < 357:
+            self.angular_controller()
+        else:
+            self.pub.publish(Twist(angular=Vector3(z=0)))
+            self.distance_follow()
+    
+    def angular_controller(self):
+        ang_vel = 0.008 * self.targ_heading
+        self.pub.publish(Twist(angular=Vector3(z=ang_vel)))
+    
+    def linear_controller(self):
+        lin_vel = 0.2 * self.lidar_scan[0]
+        self.pub.publish(Twist(linear=Vector3(x=lin_vel)))
+    
+    def distance_follow(self):
+        print("distance: " + str(self.lidar_scan[0]))
+        if self.lidar_scan[0] > self.following_distance:
+            self.linear_controller()
+        else:
+            self.pub.publish(Twist(linear=Vector3(x=0)))
 
 
     def run(self):
         r = rospy.Rate(10)
         while not rospy.is_shutdown():
-            self.state = self.state
+            if self.person_present:
+                self.follow_person()
+            else:
+                self.drive_square()
             r.sleep()
 
 if __name__ == '__main__':
