@@ -15,12 +15,16 @@ P = stop
 
 
 ## Driving in a Square
+![Square](https://github.com/amfry/warmup_project/blob/master/images/Square.jpeg)
 ## Wall Following
+![Wall States](https://github.com/amfry/warmup_project/blob/master/images/wall_follow_states.jpg)
 ## Person Following
 ## Object Avoidance
 ## FS Control
-![Finite State Machine](/CompRobo FSM.png)
+![Finite State Machine](https://github.com/amfry/warmup_project/blob/master/images/CompRobo_FSM.jpeg)
+Our implementation of an FSM controller moves between the neato moving in a square and following a person depending on wether or not a person is picked up on the neato's lidar scan.
 ## Overal Project
+
 ### Code Structure
 Each behavior implemented is it's own class.  Each class has a run method that is called in the main function. The run method calls various helper function, such as monitoring if the desired position of the robot has been achieved.  In each class we also defined many attributes in the init method, some of which were updated to new values while the program was running.
 ### Challenges/Areas for Improvment
