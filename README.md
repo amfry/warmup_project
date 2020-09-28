@@ -20,14 +20,16 @@ In the wall following behavior, the neato aims to position itself parallel to th
 ## Person Following
 In person following, the neato pursues a "person" by following at a specified distance of 1 meter.  To do this, our neato begins by performing a 360 lidar scan to check for a person. If all lidar values are infinity that means no person is present, but if any lidar values are non-infinite we add those values to a lidar_range_list. We use the minimum value in the lidar_range_list to determine the desired heading because theoretically the center of a round object will be the closest point. If this desired heading is within +/- 3 degrees of the neato's current heading, the neato drives forward until it is within range of the person. Otherwise, the neato rotates until it is facing the person. For the rotation we use proportional control so that the neato comes to a smooth stop at the desired heading. The following diagram shows the neato registering the presence of a person, turning towards the person, and then moving towards the person.
 ![follow](https://github.com/amfry/warmup_project/blob/master/images/follow.jpeg)
+We discovered a fundamental flaw in our algorithm the first time we tested it without a person in the neato's lidar range. This resulted in some alarming neato motion because the neato was trying to use proportional control on an infinite distance. Once we added a clause to handle the case where all lidar readings are infinite, the person following algorithm worked quite reliably.
 ## Object Avoidance
 case 1: neato can't go
 case 2 and 3: neato can go
 neato operates by turning and driving til a case 2 or 3 can be achieved
 ![avoid](https://github.com/amfry/warmup_project/blob/master/images/avoidance.jpeg)
 ## Finite State Control
+For finite state control, we chose to use a flag to denote whether or not a person is present. The run function checks this flag and sets the state accordingly. The following diagram shows the states and transitions of the FSM.
 ![Finite State Machine](https://github.com/amfry/warmup_project/blob/master/images/CompRobo_FSM.jpeg)
-Our implementation of an FSM controller moves between the neato moving in a square and following a person depending on wether or not a person is picked up on the neato's lidar scan.
+In our debugging process, we sometimes had a hard time narrowing down the issue since it was hard to tell which state was active and which parts worked. We found it to be very effective to disable one state at a time to identify bugs and work our way up to the functional FSM.
 ## Overal Project
 
 ### Code Structure
@@ -35,5 +37,7 @@ Each behavior implemented is it's own class.  Each class has a run method that i
 ### Challenges/Areas for Improvment
 ### Key takeways
 * Incremental development:
+We made the mistake on the first few challenges of immediately jumping into writing code and this strategy stopped working once the problems got harder.  By discussing an outline for the code we were able to implement later challenges quickly and have a common understanding of our strategy.
 * Drawing as a planning tool:
+Drawing the different case really helped for the challenges like wall following, obstacle avoidance, and person following.  The drawings helped us to grapples with the reference frames and consider more edge cases than just visualizing it in our heads.
 * Realistic goals: When starting to project we had hopes of not doing the simplest implpmentation of every challenge.  However, we are both new to ROS and found the learning curve at the beginning quite steep. This led to us spending a lot of time on some of the early challenges with limited successs and then ended up still needing to pivot to simpler implementations.  It probably would have been better for us to do the simple strategy first and then go back and try more the more difficult strategies if there was still time left.
