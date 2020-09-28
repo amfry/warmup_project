@@ -33,8 +33,11 @@ class PersonFollower():
             if np.isinf(self.lidar_scan[i]) == False:
                 self.lidar_range_values.append(self.lidar_scan[i])
                 self.lidar_range_index.append(i)
-        list_index = np.argmin(self.lidar_range_values)
-        self.targ_heading = self.lidar_range_index[list_index]
+        if len(self.lidar_range_index) == 0:
+            self.angular_controller()
+        else:
+            list_index = np.argmin(self.lidar_range_values)
+            self.targ_heading = self.lidar_range_index[list_index]
         print(self.targ_heading)
 
     def angular_controller(self):
@@ -42,7 +45,10 @@ class PersonFollower():
         self.pub.publish(Twist(angular=Vector3(z=ang_vel)))
     
     def linear_controller(self):
-        lin_vel = 0.2 * self.lidar_scan[0]
+        if np.isinf(self.lidar_scan[0]):
+            lin_vel = 0
+        else:
+            lin_vel = 0.2 * self.lidar_scan[0]
         self.pub.publish(Twist(linear=Vector3(x=lin_vel)))
 
     def distance_follow(self):
