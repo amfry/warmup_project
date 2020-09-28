@@ -11,6 +11,7 @@ For our teleop, we went with a pretty straight forward implementation using keyb
 ![Wall States](https://github.com/amfry/warmup_project/blob/master/images/wall_follow_states.jpg)
 ## Person Following
 ## Object Avoidance
+![avoid](https://github.com/amfry/warmup_project/blob/master/images/avoidance.jpeg)
 ## FS Control
 ![Finite State Machine](https://github.com/amfry/warmup_project/blob/master/images/CompRobo_FSM.jpeg)
 Our implementation of an FSM controller moves between the neato moving in a square and following a person depending on wether or not a person is picked up on the neato's lidar scan.
