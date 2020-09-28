@@ -19,6 +19,7 @@ P = stop
 ## Person Following
 ## Object Avoidance
 ## FS Control
+![Finite State Machine](/CompRobo FSM.png)
 ## Overal Project
 ### Code Structure
 Each behavior implemented is it's own class.  Each class has a run method that is called in the main function. The run method calls various helper function, such as monitoring if the desired position of the robot has been achieved.  In each class we also defined many attributes in the init method, some of which were updated to new values while the program was running.
